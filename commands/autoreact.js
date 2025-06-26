@@ -1,10 +1,13 @@
-// commands/autoreact.js
-const { handleAreactCommand } = require('../lib/reaction');
+// commands/index.js
+const fs = require('fs');
+const path = require('path');
 
-module.exports = {
-    command: '.autoreact', // کمانڈ ٹرگر
-    desc: 'Auto-reaction on/off', // تفصیل
-    handler: async (sock, m, text, isOwner) => {
-        await handleAreactCommand(sock, m, isOwner);
+const commands = {};
+fs.readdirSync(__dirname).forEach(file => {
+    if (file !== 'index.js') {
+        const cmd = require(path.join(__dirname, file));
+        commands[cmd.command] = cmd.handler;
     }
-};
+});
+
+module.exports = commands;
