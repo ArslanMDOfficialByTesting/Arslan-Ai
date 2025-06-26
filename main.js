@@ -839,15 +839,6 @@ async function handleGroupParticipantUpdate(sock, update) {
     try {
         const { id, participants, action, author } = update;
 
-        // Debug log for group updates
-        /* console.log('Group Update in Main:', {
-             id,
-             participants,
-             action,
-             author
-         });*/
-
-        // Check if it's a group
         if (!id.endsWith('@g.us')) return;
 
         // Handle promotion events
@@ -864,16 +855,13 @@ async function handleGroupParticipantUpdate(sock, update) {
 
         // Handle join events
         if (action === 'add') {
-            // Check if welcome is enabled for this group
             const isWelcomeEnabled = await isWelcomeOn(id);
             if (!isWelcomeEnabled) return;
 
-            // Get welcome message from data
             const data = JSON.parse(fs.readFileSync('./data/userGroupData.json'));
             const welcomeData = data.welcome[id];
             const welcomeMessage = welcomeData?.message || 'Welcome {user} to the group! 🎉';
 
-            // Send welcome message for each new participant
             for (const participant of participants) {
                 const user = participant.split('@')[0];
                 const formattedMessage = welcomeMessage.replace('{user}', `@${user}`);
@@ -887,16 +875,13 @@ async function handleGroupParticipantUpdate(sock, update) {
 
         // Handle leave events
         if (action === 'remove') {
-            // Check if goodbye is enabled for this group
             const isGoodbyeEnabled = await isGoodByeOn(id);
             if (!isGoodbyeEnabled) return;
 
-            // Get goodbye message from data
             const data = JSON.parse(fs.readFileSync('./data/userGroupData.json'));
             const goodbyeData = data.goodbye[id];
             const goodbyeMessage = goodbyeData?.message || 'Goodbye {user} 👋';
 
-            // Send goodbye message for each leaving participant
             for (const participant of participants) {
                 const user = participant.split('@')[0];
                 const formattedMessage = goodbyeMessage.replace('{user}', `@${user}`);
@@ -908,25 +893,6 @@ async function handleGroupParticipantUpdate(sock, update) {
             }
         }
     } catch (error) {
-    console.error('❌ Error in message handler:', error.message);
-    try {
-        const fallbackChatId = messageUpdate?.messages?.[0]?.key?.remoteJid;
-        if (fallbackChatId) {
-            await sock.sendMessage(fallbackChatId, {
-                text: '❌ Failed to process command!',
-                ...channelInfo
-            });
-        }
-    } catch (err) {
-        console.error('⚠️ Failed to send error response:', err.message);
+        console.error('❌ Error in group participant handler:', error.message);
     }
- }
-
-// Instead, export the handlers along with handleMessages
-module.exports = {
-    handleMessages,
-    handleGroupParticipantUpdate,
-    handleStatus: async (sock, status) => {
-        await handleStatusUpdate(sock, status);
-    }
-};
+                    }
