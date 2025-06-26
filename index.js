@@ -17,6 +17,7 @@ const owner = ["923237045919"];
 global.botname = "Arslan-MD";
 global.themeemoji = "✨";
 global.reactEmoji = "❤️"; // Single reaction emoji
+global.autoReactEnabled = false; // Default: Auto-reaction OFF
 global.premiumFeatures = true;
 global.autoReadMessages = true;
 
