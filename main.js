@@ -151,11 +151,11 @@ async function handleMessages(sock, messageUpdate, printLog) {
             console.log(`📝 Command used in ${isGroup ? 'group' : 'private'}: ${userMessage}`);
         }
         
-        // Auto-react on ALL messages (groups + private)
-        if (!message.key.fromMe) { // Bot khud ke messages pe react nahi karega
-        const emojis = ["❤️", "🤖", "💌", "❣️"]; // Apne pasand ke emojis daalo
-        const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-        await sock.sendMessage(chatId, {
+        // Auto-react only if enabled
+if (!message.key.fromMe && global.autoReactEnabled) {
+    const emojis = ["❤️", "🤖", "🌎", "👍", "🎉"];
+    const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+    await sock.sendMessage(chatId, {
         react: {
             text: randomEmoji,
             key: message.key
@@ -907,10 +907,20 @@ async function handleGroupParticipantUpdate(sock, update) {
                 });
             }
         }
-    } catch (error) {
-        console.error('Error in handleGroupParticipantUpdate:', error);
+    } } catch (error) {
+    console.error('❌ Error in message handler:', error.message);
+    try {
+        const fallbackChatId = messageUpdate?.messages?.[0]?.key?.remoteJid;
+        if (fallbackChatId) {
+            await sock.sendMessage(fallbackChatId, {
+                text: '❌ Failed to process command!',
+                ...channelInfo
+            });
+        }
+    } catch (err) {
+        console.error('⚠️ Failed to send error response:', err.message);
     }
-}
+ }
 
 // Instead, export the handlers along with handleMessages
 module.exports = {
