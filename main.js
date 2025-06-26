@@ -907,7 +907,7 @@ async function handleGroupParticipantUpdate(sock, update) {
                 });
             }
         }
-    } } catch (error) {
+    } catch (error) {
     console.error('❌ Error in message handler:', error.message);
     try {
         const fallbackChatId = messageUpdate?.messages?.[0]?.key?.remoteJid;
