@@ -146,9 +146,11 @@ async function handleMessages(sock, messageUpdate, printLog) {
         }
 
         // ✅ Auto-reaction
-        if (!message.key.fromMe) {
-            await addReaction(sock, message);
-        }
+        if (userMessage.startsWith('.autoreact') || userMessage.startsWith('.areact')) {
+    const chatId = message.key.remoteJid;
+    const isOwner = message.key.fromMe;
+    await handleCommand(sock, chatId, message, isOwner);
+}
 
         // ... rest of your code
         // Check if user is banned (skip ban check for unban command)
