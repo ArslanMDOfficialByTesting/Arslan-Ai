@@ -88,7 +88,7 @@ const songCommand = require('./commands/song');
 const aiCommand = require('./commands/ai');
 const { handleTranslateCommand } = require('./commands/translate');
 const { handleSsCommand } = require('./commands/ss');
-const { addReaction, handleCommand } = require('./lib/reactions');
+const { handleCommand } = require('./lib/reactions');
 const { goodnightCommand } = require('./commands/goodnight');
 const { shayariCommand } = require('./commands/shayari');
 const { rosedayCommand } = require('./commands/roseday');
@@ -147,7 +147,6 @@ async function handleMessages(sock, messageUpdate, printLog) {
 
         // ✅ Auto-reaction
         if (userMessage.startsWith('.autoreact') || userMessage.startsWith('.areact')) {
-    const chatId = message.key.remoteJid;
     const isOwner = message.key.fromMe;
     await handleCommand(sock, chatId, message, isOwner);
 }
