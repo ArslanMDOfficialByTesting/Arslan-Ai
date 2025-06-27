@@ -88,7 +88,7 @@ const songCommand = require('./commands/song');
 const aiCommand = require('./commands/ai');
 const { handleTranslateCommand } = require('./commands/translate');
 const { handleSsCommand } = require('./commands/ss');
-const { addCommandReaction, handleAreactCommand } = require('./lib/reactions');
+const { addReaction, handleCommand } = require('./lib/reactions');
 const { goodnightCommand } = require('./commands/goodnight');
 const { shayariCommand } = require('./commands/shayari');
 const { rosedayCommand } = require('./commands/roseday');
@@ -122,12 +122,8 @@ async function handleMessages(sock, messageUpdate, printLog) {
         const message = messages[0];
         if (!message?.message) return;
 
-        // Store message for antidelete feature
-        if (message.message) {
-            storeMessage(message);
-        }
+        storeMessage(message);
 
-        // Handle message revocation
         if (message.message?.protocolMessage?.type === 0) {
             await handleMessageRevocation(sock, message);
             return;
@@ -142,27 +138,19 @@ async function handleMessages(sock, messageUpdate, printLog) {
             message.message?.extendedTextMessage?.text?.trim().toLowerCase() || '';
         userMessage = userMessage.replace(/\.\s+/g, '.').trim();
 
-        // Preserve raw message for commands like .tag that need original casing
         const rawText = message.message?.conversation?.trim() ||
             message.message?.extendedTextMessage?.text?.trim() || '';
 
-        // Only log command usage
         if (userMessage.startsWith('.')) {
             console.log(`📝 Command used in ${isGroup ? 'group' : 'private'}: ${userMessage}`);
         }
-        
-        // Auto-react only if enabled
-if (!message.key.fromMe && global.autoReactEnabled) {
-    const emojis = ["❤️", "🤖", "🌎", "👍", "🎉"];
-    const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-    await sock.sendMessage(chatId, {
-        react: {
-            text: randomEmoji,
-            key: message.key
-        }
-    });
-}
 
+        // ✅ Auto-reaction
+        if (!message.key.fromMe) {
+            await addReaction(sock, message);
+        }
+
+        // ... rest of your code
         // Check if user is banned (skip ban check for unban command)
         if (isBanned(senderId) && !userMessage.startsWith('.unban')) {
             // Only respond occasionally to avoid spam
