@@ -26,7 +26,7 @@ async function playCommand(sock, chatId, message) {
     const firstResult = searchResults.videos[0];
     const videoUrl = firstResult.url;
 
-    const apiUrl = `https://apis.davidcyriltech.my.id/download/ytmp3?url=${videoUrl}`;
+    const apiUrl = `https://api.vreden.my.id/api/v1/download/youtube/audio?url=${videoUrl}`;
     const response = await axios.get(apiUrl);
 
     if (!response.data.success || !response.data.result?.download_url) {
