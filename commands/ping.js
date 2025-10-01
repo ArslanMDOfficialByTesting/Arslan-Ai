@@ -3,9 +3,9 @@ const settings = require('../settings.js');
 
 function formatTime(seconds) {
     const days = Math.floor(seconds / (24 * 60 * 60));
-    seconds = seconds % (24 * 60 * 60);
+    seconds %= (24 * 60 * 60);
     const hours = Math.floor(seconds / (60 * 60));
-    seconds = seconds % (60 * 60);
+    seconds %= (60 * 60);
     const minutes = Math.floor(seconds / 60);
     seconds = Math.floor(seconds % 60);
 
@@ -20,27 +20,34 @@ function formatTime(seconds) {
 
 async function pingCommand(sock, chatId, message) {
     try {
+        // Auto reaction
+        await sock.sendMessage(chatId, { react: { text: "⚡", key: message.key } });
+
         const start = Date.now();
-        await sock.sendMessage(chatId, { text: 'Pong!' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: 'Testing speed... ⏳' }, { quoted: message });
         const end = Date.now();
         const ping = Math.round((end - start) / 2);
 
-        const uptimeInSeconds = process.uptime();
-        const uptimeFormatted = formatTime(uptimeInSeconds);
+        const uptimeFormatted = formatTime(process.uptime());
+        const platform = os.type() + " " + os.arch();
+        const ram = (os.totalmem() / (1024 ** 3)).toFixed(2) + " GB";
 
         const botInfo = `
-┏━━〔 🤖 Arslan-Ai 〕━━┓
-┃ 🚀 Ping     : ${ping} ms
-┃ ⏱️ Uptime   : ${uptimeFormatted}
-┃ 🔖 Version  : v${settings.version}
-┗━━━━━━━━━━━━━━━━━━━┛`.trim();
+╭━━━〔 🤖 ${settings.botName || "Arslan-Ai"} 〕━━━╮
+│ ⚡ *Ping*     : ${ping} ms
+│ ⏱️ *Uptime*   : ${uptimeFormatted}
+│ 💻 *Platform* : ${platform}
+│ 🖥️ *RAM*      : ${ram}
+│ 🔖 *Version*  : v${settings.version}
+╰━━━━━━━━━━━━━━━━━━━╯
+        `.trim();
 
-        // Reply to the original message with the bot info
-        await sock.sendMessage(chatId, { text: botInfo},{ quoted: message });
+        // Send final styled message
+        await sock.sendMessage(chatId, { text: botInfo }, { quoted: message });
 
     } catch (error) {
-        console.error('Error in ping command:', error);
-        await sock.sendMessage(chatId, { text: '❌ Failed to get bot status.' });
+        console.error('❌ Ping Command Error:', error);
+        await sock.sendMessage(chatId, { text: '❌ Failed to get bot status. Please try again later.' }, { quoted: message });
     }
 }
 
