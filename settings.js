@@ -45,7 +45,7 @@ const settings = {
   
   // ⚙️ Operation Modes
   MODE: "public", // public/private/group-only
-  commandMode: "public", // Legacy support
+  CommandMode: "public", // Legacy support
   
   // 💎 Premium Features
   autoreact: {
@@ -66,6 +66,7 @@ const settings = {
   
   // 🌐 APIs
   giphyApiKey: "qnl7ssQChTdPjsKta2Ax2LMaGXz303tq",
+  updateZipUrl: "https://github.com/Arslan-MD/Arslan-Ai/archive/refs/heads/main.zip",
   openaiKey: "sk-proj-xxxxxxxxxxxxxxxx", // New format
   removeBgKey: "rmbg-xxxxxxxxxxxx",
   
